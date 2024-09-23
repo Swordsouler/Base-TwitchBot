@@ -1,12 +1,12 @@
 export class User {
     public userId: string;
     public displayName: string;
-    protected accessToken: string;
+    public accessToken: string;
     protected refreshToken: string;
     protected get ready(): boolean {
         return !!this.accessToken;
     }
-    private refreshTimeout: NodeJS.Timeout;
+    public refreshTimeout: NodeJS.Timeout;
 
     constructor(userId: string, displayName?: string, refreshToken?: string) {
         if (!userId) {
@@ -29,7 +29,8 @@ export class User {
         load();
     }
 
-    protected onReady(): void {}
+    protected onReady(): void {
+    }
 
     public async refreshAccessToken(): Promise<string> {
         if (!this.refreshToken) return "";
@@ -56,9 +57,12 @@ export class User {
         }
         const data = await response.json();
         this.accessToken = data.access_token;
+        console.log(
+            `Refreshed access token for user ${this.userId} (${this.displayName})`
+        );
         clearTimeout(this.refreshTimeout);
         this.refreshTimeout = setTimeout(
-            this.refreshAccessToken,
+            () => this.refreshAccessToken(),
             data.expires_in * 1000
         );
         return this.accessToken;

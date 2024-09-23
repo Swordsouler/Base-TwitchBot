@@ -14,10 +14,10 @@ import { CheerSubscription } from "../Events/Subscriptions/CheerSubscription";
 import { RaidSubscription } from "../Events/Subscriptions/RaidSubscription";
 import { ChannelPointsCustomRewardRedemptionAddSubscription } from "../Events/Subscriptions/ChannelPointsCustomRewardRedemptionAddSubscription";
 import { BanSubscription } from "../Events/Subscriptions/BanSubscription";
-const TES = require("tesjs");
+import { TES } from "../api/TwitchEvent/tes";
 
 export class Streamer extends User {
-    private tes: any;
+    private tes: TES;
 
     constructor(userId: string, displayName?: string, refreshToken?: string) {
         super(userId, displayName, refreshToken);
@@ -201,8 +201,9 @@ export class Streamer extends User {
         }, 30000);*/
     }
 
-    public stop() {
-        this.tes.disconnect();
+    public async stop() {
+        await this.tes.disconnect();
+        clearTimeout(this.refreshTimeout);
         console.log(`Disconnected from ${this.displayName}`);
     }
 }
